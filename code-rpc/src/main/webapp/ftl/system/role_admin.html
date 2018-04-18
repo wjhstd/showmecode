@@ -1,0 +1,482 @@
+  <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="UTF-8">
+	<title>角色管理</title>
+	
+	<link rel="stylesheet" type="text/css" href="<@sp.role_static />easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="<@sp.role_static />easyui/themes/icon.css?11=">
+     <link rel="stylesheet" type="text/css" href="<@sp.role_static />css/myeasyui.css">
+         
+    <link rel="stylesheet" href="<@sp.role_static />css/ztree/zTreeStyle.css" />
+	<link rel="stylesheet" href="<@sp.role_static />css/ztree/demoStyle/demo.css">
+ 
+    <script type="text/javascript" src="<@sp.role_static />js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="<@sp.role_static />easyui/jquery.easyui.min_mff.js"></script>
+    <script type="text/javascript" src="<@sp.role_static />easyui/easyui-lang-zh_CN.js"></script>
+
+    <script src="<@sp.role_static />js/jquery/plugins/ztree/jquery.ztree-2.6.min.js" type="text/javascript"></script>
+	
+</head>
+
+
+   <body style="background:#d9e0e7;">
+    
+    <div style="position:absolute; left:15px; top:0px; right:15px; bottom:0px; overflow:auto">
+
+        <div id="query_panel"  class="easyui-panel" title="查询面板"     
+                style="padding:10px;background:#fafafa;"   
+                data-options="iconCls:'icon-search',collapsible:true" >
+                <form id="queryFm" method="post" onSubmit="return false">
+                    <div class="fitem">
+                        <label>角色名称:</label> <input name="name" class="easyui-validatebox" > <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onClick="query()" >查询</a>
+                    </div>
+                </form>
+            
+            </div>  
+        <div style="height:10px; overflow:hidden"></div>
+        <table id="dg" title="管理" class="easyui-datagrid" style="height:400px;"
+         data-options="url:'<@sp.ctx />system/role.htm?method=query',showGroup:true,scrollbarSize:0"
+        toolbar="#toolbar" pagination="true" 
+        rownumbers="true" fitColumns="true" singleSelect="true">
+        <thead>
+        <tr>
+        <th field="roleId" width="50" hidden="hidden">ID</th>	
+        <th field="name" width="50">角色名称</th>
+         <th field="orgName" width="50">所属公司</th>
+        <!-- <th field="status" width="50" formatter="formatStatus" >状态</th> -->
+        <th field="remark" width="50">备注</th>
+        <th field="createTime" width="80" >创建时间</th>
+        </tr>
+        </thead>
+        </table>
+        <#include "role_detail_inc.html">
+        <div id="dlg" class="easyui-dialog" style="width:900px;height:500px;padding:10px 20px"
+        closed="true" buttons="#dlg-buttons">
+         <form id="fm" method="post" novalidate >
+        <div class="ftitle">编辑内容</div>
+       
+            <div class="fitem" hidden="hidden" style="display: none">
+            <label>角色ID:</label>
+            <input name="roleId" class="easyui-validatebox">
+            </div>
+            
+              <div class="fitem">
+            <label>角色名称:</label>
+            <input name="name" class="easyui-validatebox"  required="true"  >
+            </div>
+            
+            <div class="fitem">
+            <label>所属公司:</label>
+            <input id="orgId" name="orgId" class="easyui-combobox" style="width:200px;" required="required"
+                data-options="valueField:'orgId',textField:'orgName',url:'<@sp.ctx />/system/corp.htm?method=getList'"  >
+            </div>
+            
+            <div class="fitem">
+            <label>状态 :</label>
+             <input type="radio" name="status"  value="1"   checked="checked" /> 有效
+             <input type="radio" name="status"  value="0" /> 无效（相当于逻辑删除）
+            </div>
+            <div class="fitem">
+            <label>备注:</label>
+            <input name="remark"  class="easyui-validatebox" >
+            </div>
+            <input id="checkMenuIds" name="checkMenuIds" type="hidden" />
+       
+        <div class="ftitle">编辑权限</div>
+            <table style="width: 100% ">
+            <tbody>
+                <tr>
+                    <td> <div style="width:300px;height:330px;background:#fafafa"  >
+                <ul id="treeDemo" class="tree" style="width:250px; height:100%;overflow:auto;border: 1px solid #ccc;background: #E0ECFF"></ul>
+                </div></td>
+                <td>
+                    <!-- <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-right" onclick="toRight()">&gt;&gt;&gt;</a> -->
+                </td>
+                <td><div style="width:400px;height:330px;background:#fafafa"  >
+                    <table style="width: 100%;background:#fafafa " id="menuUrlCURDTable" >
+                    <thead></thead>
+                    <tbody></tbody>
+                    </table>
+                </div></td>
+                </tr>
+            </tbody>
+            </table>
+           
+            
+        </div>
+          </form>
+        <div id="dlg-buttons">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onClick="save()">保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onClick="javascript:$('#dlg').dialog('close')">取消</a>
+        </div>
+        
+        
+        <script type="text/javascript">
+    
+    
+    /**
+     * DDR 2012-05-08 配置产品功能
+     * 修改成树型结果，ajax
+     */
+    var node_ = {};
+    var simpleNodes = []; //菜单功能数组
+    var pdSipNodes = []; //产品菜单数组
+    
+    var checkIds = "${checkIdsStr!''}"+",";
+    
+    $(function(){
+        //simpleNodes.push( { id:0, pId:-1, name:"菜单", ename:"ent",checked:pdSipNodes.length>1});
+        <#list treeMenuList as  menu>
+            node_ = { id:${menu.menuId}, pId:${menu.parentId}, name:"${menu.name}",menuUrl:"${menu.url!''}",position:"${menu.position}",status:${menu.status},checked: (checkIds.indexOf(","+${menu.menuId}+",")>=0)};simpleNodes.push(node_);	
+        </#list>
+        //加载树
+      
+            reloadTree();
+       
+    });
+    
+    function setFontCss(treeId, treeNode) {
+         
+         if(treeNode.status == 0){
+             return {color:"gray"};
+         }
+       return {};
+    }
+    
+    var zTree1, zTree2;
+    var setting1 ={
+            fontCss:setFontCss,	
+             checkable: true,
+                isSimpleData : true,
+                  rootPID : -1,
+                  treeNodeKey : "id",
+                 treeNodeParentKey : "pId",
+            editable: false,
+            edit_renameBtn:false,
+            edit_removeBtn:false,
+            dragCopy: true,
+            dragMove: false,
+             callback:{  
+                //    dblclick: zTreeOnDblclick,
+                    change: zTreeOnChange,
+                  //  expand: zTreeOnExpand
+                   }  
+        };
+        
+    function zTreeOnChange(event, treeId, treeNode){
+    	if(treeNode.checked){
+    		toRight(treeNode);
+    	}else{
+    		toRemoveRight(treeNode);
+    	}
+        
+    }
+        
+        
+        /* var setting2 ={
+                isSimpleData : true,
+                  rootPID : -1,
+                  treeNodeKey : "id",
+                 treeNodeParentKey : "pId",
+                editable: false
+            
+            
+        };
+     */
+        //加载树的方法
+        function reloadTree() {
+            zTree1 = $("#treeDemo").zTree(setting1,simpleNodes);
+            //zTree2 = $("#treeDemo2").zTree(setting2,pdSipNodes);
+            //zTree2.expandAll(true);
+        }
+        
+        
+    
+        //包装提交参数
+        function packageNodes(nodes){
+            var str = "";
+            for(var i=0;i<nodes.length;i++){
+                    str+=nodes[i].id+",";
+            }
+            return str;
+        }
+        
+  
+    
+    
+    </script>
+        <script type="text/javascript">
+        
+       
+        
+        
+        var baseAction = "<@sp.ctx />system/role.htm"
+        var url;
+        function addDg(){
+            $('#dlg').dialog('open').dialog('setTitle','新增');
+            $('#fm').form('clear');
+            $('#fm').form('reset');
+            $("#menuUrlCURDTable thead").html("");
+            $("#menuUrlCURDTable tbody").html("");
+            url = baseAction+'?method=saveOrUpdate&_ajax';
+            zTree1.checkAllNodes(false);
+           
+        }
+        function editDg(){
+            var row = $('#dg').datagrid('getSelected');
+            if (row){
+                $('#dlg').dialog('open').dialog('setTitle','修改');
+                $('#fm').form('load',row);
+                $("#menuUrlCURDTable tbody").html("");
+                url = baseAction+'?method=saveOrUpdate&_ajax';
+            }
+            
+            var getCheckIdsUrl = baseAction+'?method=getRoleMenus&roleId='+row.roleId;
+            zTree1.checkAllNodes(false);
+            $.getJSON(getCheckIdsUrl,[],function cbk(checkIds){
+                for(var i=0;i<checkIds.length;i++){
+                    var node = zTree1.getNodeByParam("id", checkIds[i]);
+                    node.checked = true;
+                }
+                zTree1.refresh();
+            });
+    
+            var getMenuOptsUrl = baseAction+'?method=getRoleMenuOpts&roleId='+row.roleId;
+            $("#menuUrlCURDTable tbody").html("");
+            $.getJSON(getMenuOptsUrl,[],function cbk(menuOpts){
+                if(menuOpts == null || ! menuOpts){
+                    return;
+                }
+                var htmlBody = "";
+                for(var i=0;i<menuOpts.length;i++){
+                    htmlBody+="<tr id='curd_"+menuOpts[i].menuId+"'>"+"<td>"+(menuOpts[i].menuName)+"</td><td>"+setRightHtml(menuOpts[i])+"</td>"+"</tr>";
+                }
+                $("#menuUrlCURDTable thead").html(crudTableHeader());
+                $("#menuUrlCURDTable tbody").html(htmlBody);
+                
+            });
+            
+            
+        }
+        
+        function crudTableHeader(){
+            var tableHead = "<tr><th>名称</th><th>权限<input type='checkbox'   onclick='checkAll(2,this.checked)' />增<input type='checkbox'  onclick='checkAll(3,this.checked)' />改<input type='checkbox'   onclick='checkAll(4,this.checked)' />删<input type='checkbox'   onclick='checkAll(5,this.checked)' />审 操作</th></tr>";
+            return tableHead;
+        }
+        
+        
+      /*
+      //拼接删除权限结点
+      function romveCurBtnHtml(){
+            return " <a href='javascript:void(0)' class='easyui-linkbutton' iconCls='icon-remove' plain='true' onclick='$(this).parent().parent().remove();'>删除</a>"
+        } */
+        function toRight(checkedNode){
+        	//当前存在的功能ID
+        	 var newIds = [];
+        	 
+        	//新的功能ID
+            var nodes = zTree1.getCheckedNodes(); 
+            var htmlBody = $("#menuUrlCURDTable tbody").html();;
+            for(var i=0;i<nodes.length;i++){
+                var ni = nodes[i];
+                if(ni.level == 2){
+					//如果当前菜单存在，则不生成新的                	
+                    if($("#curd_"+ni.id).html() ){
+                        continue;
+                    }
+                    var htmlActions = defaultRightHtml(ni.id);
+                  // htmlBody+="<tr id='curd_"+ni.id+"'>"+"<td>"+ni.name+"</td><td>"+htmlActions+romveCurBtnHtml()+"</td>"+"</tr>";
+                   htmlBody+="<tr id='curd_"+ni.id+"'>"+"<td>"+ni.name+"</td><td>"+htmlActions+"</td>"+"</tr>";
+                }
+            }
+            
+            $("#menuUrlCURDTable thead").html(crudTableHeader());
+            $("#menuUrlCURDTable tbody").html(htmlBody);
+        }
+        
+        function toRemoveRight(unCheckedNode){
+        	
+        	if(unCheckedNode.level == 2){
+        		toRemoveRight(unCheckedNode.id);
+        		return ;
+        	}
+            var nodes = unCheckedNode.nodes;
+            if(nodes == null){
+            	return ;
+            }
+            for(var i=0;i<nodes.length;i++){
+                var ni = nodes[i];
+                if(ni.level <=1){
+                	return toRemoveRight(ni);
+                }
+                if(ni.level == 2){
+					//如果当前菜单存在，则不生成新的                	
+                    removeByMid(ni.id);
+                }
+            }
+        }
+        
+        function removeByMid(menuId){
+             	$("#curd_"+menuId).remove();
+        }
+        
+        function defaultRightHtml(id){
+            var html = "<input type='hidden' value='"+id+"'  name='crudMenuId' /><input type='checkbox' value='1' checked='checked' name='que_"+id+"' disabled='disabled'>查"
+            +"<input type='checkbox' value='1'  name='add_"+id+"' />增"
+            +"<input type='checkbox' value='1'  name='upd_"+id+"' />改"
+            +"<input type='checkbox' value='1'  name='del_"+id+"' />删"
+            +"<input type='checkbox' value='1'  name='aud_"+id+"' />审";
+            var mEM = menuExtraMaps[id];
+            if(mEM != null){
+                var extrHtmls = "<br />";
+                extrHtmls += "<input type='hidden' value='1'  name='extFlag_"+id+"' />";
+                for(var eInd =1;eInd<= mEM.length;eInd++ ){
+                    extrHtmls += "<input type='checkbox' value='1'  name='ext_"+eInd+"_"+id+"' />"+mEM[eInd-1];
+                }
+                html += extrHtmls;
+            } 
+            return html;
+            
+        }
+        
+      
+        
+        function setRightHtml(menuOpt){
+            var html = "<input type='hidden' value='"+menuOpt.menuId+"'  name='crudMenuId' /><input type='checkbox' value='1' checked='checked' name='que_"+menuOpt.menuId+"' disabled='disabled'>查"
+            +"<input type='checkbox' value='1'  name='add_"+menuOpt.menuId+"' "+(menuOpt.dataAdd==1?"checked='checked'":"")+"/>增"
+            +"<input type='checkbox' value='1'  name='upd_"+menuOpt.menuId+"' "+(menuOpt.dataUpdate==1?"checked='checked'":"")+"/>改"
+            +"<input type='checkbox' value='1'  name='del_"+menuOpt.menuId+"' "+(menuOpt.dataDelete==1?"checked='checked'":"")+"/>删"
+            +"<input type='checkbox' value='1'  name='aud_"+menuOpt.menuId+"' "+(menuOpt.dataAudit==1?"checked='checked'":"")+"/>审";
+            var id = menuOpt.menuId;
+            var mEM = menuExtraMaps[id];
+            if(mEM != null){
+                var extrHtmls = "<br />";
+                extrHtmls += "<input type='hidden' value='1'  name='extFlag_"+id+"' />";
+                for(var eInd =1;eInd<= mEM.length;eInd++ ){
+                    extrHtmls += "<input type='checkbox' value='1'  name='ext_"+eInd+"_"+id+"' "+(menuOpt["dataExtra"+eInd]==1?"checked='checked'":"")+"/>"+mEM[eInd-1];
+                }
+                html += extrHtmls;
+            } 
+            return html;
+            
+            
+        }
+        function checkAll(type,checked){
+            var doucm = null;
+            if(type == 2)
+                doucm = $("#menuUrlCURDTable").find(":input[name*=add_]");
+            if(type == 3)
+                doucm = $("#menuUrlCURDTable").find(":input[name*=upd_]");
+            if(type == 4)
+                doucm = $("#menuUrlCURDTable").find(":input[name*=del_]");
+            if(type == 5)
+                doucm = $("#menuUrlCURDTable").find(":input[name*=aud_]");
+            
+            if(doucm){
+                if(checked){
+                    doucm.attr("checked","checked");
+                }else{
+                    doucm.removeAttr("checked");
+                }
+            }
+            
+        }
+        
+        
+        
+        function save(){
+            
+            var nodes = zTree1.getCheckedNodes(); 
+            var	packageChkedIds = packageNodes(nodes);
+            $("#checkMenuIds").val(packageChkedIds);
+            
+        $('#fm').form('submit',{
+        "url": url,
+        onSubmit: function(){
+         return  $(this).form('validate');
+        },
+        success: function(result){
+        var result = eval('('+result+')');
+        if (result.errorMsg){
+              $.messager.alert('Error',
+                         result.errorMsg
+                   );
+        } else {
+            $('#dlg').dialog('close'); // close the dialog
+            $('#dg').datagrid('reload'); // reload the user data
+        }
+        }
+        });
+        }
+        function destroyDg(){
+            var row = $('#dg').datagrid('getSelected');
+            if (row){
+                 $.messager.confirm('确定删除','确定删除选中数据吗?',function(r){
+            if (r){
+                $.post(baseAction+'?method=remove',{id:row.roleId},function(result){
+            if (result.success){
+                $('#dg').datagrid('reload'); // reload the user data
+            } else {
+                  $.messager.alert('Error',
+                             result.errorMsg
+                       );
+        }
+        },'json');
+        }
+        });
+        }
+        }
+    
+        
+         function formatStatus(val, row) {
+                var vResult = "";
+                
+                 if (val == '1') {
+                    vResult = '<span style="color:green;">正常</span>';
+                }
+                else if (val == '0') {
+                    vResult = '<span style="color:gray;">无效</span>';
+                }
+                return vResult;
+            }
+         
+        </script>
+        
+        <script type="text/javascript">
+            var menuExtraMaps = {};
+            $(function(){
+                $.get(baseAction+"?method=loadAllExtraNames",{},function(extraList){
+                    if(extraList!=null && extraList){
+                        for(var op = 0;op<extraList.length;op++){
+                            var extraObj  = extraList[op];
+                            if(extraObj!=null){
+                                menuExtraMaps[extraObj.menuId] = [];
+                                for(var pj = 1;pj<= 6;pj++){
+                                    var actionName =     extraObj["extra"+pj+"Name"];					
+                                    if(actionName){
+                                    menuExtraMaps[extraObj.menuId][pj-1] = actionName; 
+                                }
+                                else{
+                                    break;
+                                }
+                                }
+                            }
+                            
+                        }
+                    }
+                });
+                
+            });
+        //	menuExtraMaps[69] = ["走访","审核","分配","评级"];
+            
+            
+      
+            
+        </script>
+         <!-- 这里的query是通用js,如果有特别的查询可以不引入 -->
+            <#include "query_js_inc.html">
+            
+            </div>
+    </body>
+    </html>

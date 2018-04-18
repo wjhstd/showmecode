@@ -1,0 +1,327 @@
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="UTF-8">
+    <title>菜单管理</title>
+    <link rel="stylesheet" type="text/css" href="<@sp.role_static />easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="<@sp.role_static />easyui/themes/icon.css">
+    
+     <link rel="stylesheet" type="text/css" href="<@sp.role_static />css/myeasyui.css">
+ 
+    <script type="text/javascript" src="<@sp.role_static />js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="<@sp.role_static />easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="<@sp.role_static />easyui/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="<@sp.role_static />js/My97DatePicker/WdatePicker.js"  ></script>
+    <script type="text/javascript" src="<@sp.role_static />js/chrono-public.js"></script>
+    
+    
+    <link rel="stylesheet" href="<@sp.role_static />css/ztree/zTreeStyle.css" />
+	<link rel="stylesheet" href="<@sp.role_static />css/ztree/demoStyle/demo.css">
+	
+	<style type="text/css">
+		.must {
+			color: red
+		}
+</style>
+	
+    <script src="<@sp.role_static />js/jquery/plugins/ztree/jquery.ztree-2.6.min.js" type="text/javascript"></script>
+   <script type="text/javascript">
+
+/**
+ * DDR 2012-05-08 配置产品功能
+ * 修改成树型结果，ajax
+ */
+var node_ = {};
+var simpleNodes = []; //菜单功能数组
+
+var curNode = null;
+var zTree1;
+var setting1 ={
+			isSimpleData : true,
+			  rootPID : -1,
+			  treeNodeKey : "id",
+			 treeNodeParentKey : "pId",
+			  editable : true,
+			   edit_removeBtn : true,
+			   edit_renameBtn : false,
+			  callback : {
+			      click: editMenu,
+			      beforeRemove: removeCurNode
+			    }
+	};
+	
+
+
+	//加载树的方法
+	function reloadTree() {
+		zTree1 = $("#treeDemo").zTree(setting1,simpleNodes);
+		zTree1.expandAll(true);
+	}
+	
+	
+	
+	function editMenu(event, treeId, treeNode) {
+		//alert(treeNode.id + ", " + treeNode.name);
+		//alert(treeNoe.parentNode.name );
+		curNode = treeNode;
+		$("#parentName").val(treeNode.parentNode.name );
+		$("#parentId").val(treeNode.pId );
+		$("#url").val(treeNode.menuUrl );
+		$("#position").val(treeNode.position );
+		$("#menuCode").val(treeNode.menuCode );
+		$("#name").val(treeNode.name );
+		$("#menuId").val(treeNode.id );
+		$(":input[name=status]").val([treeNode.status+""]);
+		$(":input[name=systemMenu]").val([treeNode.systemMenu+""]);
+		$('#dlg').dialog('open').dialog('setTitle','编辑菜单')
+		return false;
+	}
+	
+	function removeCurNode(treeId,treeNode){
+		if(confirm("删除"+treeNode.name+"吗？")){
+			
+			$.post(window.location.href+"",{method:"remove",id:treeNode.id},function (msg){
+				 var resultDto = msg;
+					if(resultDto.success){
+					zTree1.removeNode(treeNode);		
+					
+					 $.messager.alert( '成功',
+						   "删除成功");
+					curNode = treeNode.parentNode;
+				}
+				else{
+					 $.messager.alert('错误',
+						   resultDto.errorMsg
+					    );
+				}
+			});
+		}
+		
+		return false;
+	}
+
+	
+	
+$(function(){
+	simpleNodes.push( { id:0, pId:-1, name:"菜单配置", ename:"ent"});
+	
+	<#list treeMenuList as  menu>
+node_ = { id:${menu.menuId}, pId:${menu.parentId}, name:"${menu.name}",menuUrl:"${menu.url!''}",menuCode:"${menu.menuCode!''}",position:"${menu.position}",status:${menu.status},systemMenu:${menu.systemMenu}};
+simpleNodes.push(node_); 
+	 </#list>
+	//加载树
+	reloadTree();
+	
+	
+});
+
+
+function formValidte(){
+	var name = $("#name").val();
+	var parentId = $("#parentId").val();
+	if(name.length == 0 ){
+		$.messager.alert(
+		   '错误',
+		     "菜单名称不能为空");
+		return false;
+	}
+	
+	if(parentId.length == 0 ){
+		$.messager.alert(
+		    '错误',
+		   "父菜单不能为空"
+	    );
+		return false;
+	}
+	return true
+
+
+	
+}
+function formSubmit(){
+	var menuCode = $("#menuCode").val().toUpperCase();
+	$("#menuCode").val(menuCode);
+	if(! formValidte()){
+		return false;
+	}
+	
+	var paras  =$("#fm").serialize();
+	var isSave = true;
+	if($("#menuId").val().length==0){
+		paras+="&method=save&_ajax";
+		isSave = true;
+	}else{
+		paras+="&method=update";
+		isSave = false;
+	}
+	$.post(window.location.href,paras,function (msg){
+		
+		
+		   var resultDto = msg;
+		   
+		if(resultDto.success){
+			
+			if(isSave){
+				 $.messager.alert( '成功',
+					    "新增成功！"
+				    );
+				var nNo = 
+				{ 		id:resultDto.paramObj, 
+						pId:curNode.id, 
+						name:$("#name").val(),
+						menuUrl:$("#url").val(),
+						position:$("#position").val(),
+						menuCode:$("#menuCode").val().toUpperCase(),
+						status:parseInt($("input:radio[name=status]:checked").val()),
+						systemMenu:parseInt($("input:radio[name=systemMenu]:checked").val())
+				};
+				
+				var nNos = [nNo];
+				var nodes = zTree1.addNodes(curNode, nNos);
+				$("#url").val("" );
+				$("#position").val("" );
+				$("#name").val("");
+				return false;
+			}else{
+				
+				curNode.name=$("#name").val();
+				curNode.menuCode=$("#menuCode").val().toUpperCase();
+				curNode.menuUrl=$("#url").val();
+				curNode.position=$("#position").val();
+				curNode.status=parseInt($("input:radio[name=status]:checked").val());
+				curNode.systemMenu=parseInt($("input:radio[name=systemMenu]:checked").val());
+				zTree1.updateNode(curNode, true);
+				 $.messager.alert('成功',
+						    "更新成功！"
+					    );
+			}
+			
+		}
+		else{
+			 $.messager.alert("失败",resultDto.errorMsg);
+		}
+	});
+	return false;
+}
+
+
+
+function editNewSon(){
+	$("#menuId").val("");
+	$("#parentName").val(curNode.name );
+	$("#parentId").val(curNode.id );
+	$("#url").val("" );
+	$("#menuCode").val("");
+	$("#position").val("10");
+	$("#name").val("");
+	$(":input[name=status]").val(["1"]);
+	$(":input[name=systemMenu]").val(["0"]);
+}
+
+</script>
+    </head>
+   
+   <body>
+    
+    
+     <div id="query_panel"  class="easyui-panel" title="管理面板"     
+        style="height:1000px;padding:10px;background:#fafafa;"   
+        data-options="iconCls:'icon-admin',collapsible:true">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td height="6"></td>
+	</tr>
+</table>
+<p align="center">
+
+
+
+<table class="border_all2" width="60%" border="0" cellspacing="0" cellpadding="1" align="center">
+	
+	<tr valign="top" class="trForContent1">
+		<td align="center" nowrap class="border_top_right4">
+		<table width="617" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td colspan="3">&nbsp;</td>
+			</tr>
+			<tr align="center">
+				<td align="left">菜单配置根 <input type="button" style="font-size:11px " value="全部展开 " onclick="zTree1.expandAll(true);" />
+									  <input type="button"  style="font-size:11px " value="全部闭合" onclick="zTree1.expandAll(false);" />	
+					</td>
+				<td>&nbsp;</td>
+				<td align="left">编辑菜单区<div style="float: right"><input type="button"  style="font-size:11px " name="addBtn" value="添加子菜单"  onclick=" $('#dlg').dialog('open').dialog('setTitle','新增菜单');editNewSon()" > </div>
+									  </td>
+			</tr>
+			<tr align="center">
+
+				<td width=340px   align=center valign=top style="width:300px; min-height:1400px; ">
+					
+				<ul id="treeDemo" class="tree" style="width:250px; height:100%;overflow:auto;border: 1px solid #ccc;"></ul>
+				</td>
+				<td width="121">
+				</td>
+				<td width=340px  height="500" align=center valign=top style="width:300px; overflow:auto;">
+				 <div id="dlg" class="easyui-dialog" style="width:460px;height:350px;padding:10px 20px"
+    closed="true" buttons="#dlg-buttons">
+    <div class="ftitle">添加/编辑菜单</div>
+    <form id="fm" method="post" novalidate >
+    	
+	    <div class="fitem">
+	    <label>父菜单：</label>
+	    <input type="text" name="parentName" id="parentName" title="必填字段" readonly="readonly" style="color: gray;background-color: #ccc;width: 200px" placeholder="">
+	    </div>
+	    <div class="fitem" >
+	    <label>菜单名称<span class="must"> * </span>：</label>
+	    <input type="text" name="name" title="必填字段"  id="name"  placeholder="当前菜单的名称" style="width: 200px"  />
+	    </div>
+	    <div class="fitem" >
+	    <label>菜单代码<span class="must"> * </span>：</label>
+	    <input type="text" name="menuCode"   id="menuCode"  placeholder="功能代码，唯一，使用大写字母" style="width: 200px"  />
+	    </div>
+	    <div class="fitem">
+	    <label>URL：</label>
+	    <input type="text" id="url"  name="url" placeholder="当前菜单的地址，一般填写相对路径" style="width: 200px"  />
+	    </div>
+	    
+	    <div class="fitem">
+	    <label>同级排序 <span class="must"> * </span> ：</label>
+	    <input type="text" id="position" class="validate-number" title="必须为数字" name="position"  style="width: 40px" placeholder="越大越靠后，一般以10开始，每增加一个递增10" value="10">
+	    越大越靠后，同级第一个为10
+	    </div>
+	      <div class="fitem" hidden="hidden">
+	    <label>状态：</label>
+	    <input type="radio" name="status"  value="1" checked="checked" /> 有效
+				<input type="radio" name="status"  value="0" /> 无效（不显示菜单中）
+	    </div>
+	    <div class="fitem">
+	    <label>系统菜单：</label>
+	    
+				<input type="radio" name="systemMenu"  value="0"  checked="checked" /> 否
+				<input type="radio" name="systemMenu"  value="1"  /> 是(限超级管理员能看到)
+	    </div>
+	    <input type="hidden" name="menuId" id="menuId">
+			<input type="hidden" name="parentId" id="parentId">
+    </form>
+    </div>
+     <div id="dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="formSubmit()">保存</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+    </div>
+				
+				</td>
+			</tr>
+			<tr align="center">
+				<td colspan="3">&nbsp;</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+</table>
+        
+        
+        </div>
+    
+    
+   
+    </body>
+    </html>

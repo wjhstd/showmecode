@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd">
+   
+   	
+   	
+ 	<bean  class="com.wondersgroup.ltcins.base.property.PasswordAutoEncrypPropertyPlaceholderConfigurer" scope="prototype" >
+        <property name="locations">  
+            <list>  
+           <!--  改成文件方式 -->
+            	<value>file:/app/config/cpic-cms/jdbc/*.properties</value>
+                <!-- 环境相关的配置文件不推荐放在classpath中，不安全也不灵活 -->
+               <!--<value>classpath:jdbc/*.properties</value>-->
+            </list>  
+        </property>  
+    </bean> 
+   	 
+   	 
+	
+	
+</beans>

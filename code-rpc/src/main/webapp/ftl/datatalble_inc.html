@@ -1,0 +1,241 @@
+   <style>
+   .pace .pace-activity{display:none}
+	#data-table {
+    display:block;
+
+	overflow-x:auto;
+	overflow-y:auto;
+	}
+	#queryDiv{padding-bottom:0}
+	.dataTables_wrapper .dataTables_paginate{
+	padding:8px 0 7px 0
+	}
+	.table.dataTable.no-footer{border-bottom:1px solid #ccd0d4}
+	form,#edit_form,#scroll_page {
+
+		overflow-x:auto;
+		overflow-y:auto;
+	}
+	.table-responsive{
+		overflow-x:hidden;
+	}
+	#data-table_wrapper{
+	position:relative;
+	}
+	#data-table_length{
+	position:absolute;
+	left:0;
+	bottom:3px;
+	}
+	#data-table_info{
+	padding-left:200px;
+	padding-top:13px;
+	}
+	div.table-responsive{
+	overflow:hidden;
+	}
+	.dataTables_length select{
+	height:auto !important;
+	padding-right:0;
+	}
+	.panel-body input{
+	border:1px solid #ccd0d4;
+	background:#fff;
+	font-size:12px;
+	padding:6px 12px;
+	line-height:1.42857143;
+	color:#555;
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;
+	border-radius:3px;
+	outline:none;
+
+	}
+	table.dataTable.nowrap th, table.dataTable.nowrap td,table.dataTable tbody th, table.dataTable tbody td{vertical-align:middle}
+	.panel-body input[type="checkbox"],.panel-body input[type="radio"]{
+	position:relative;
+	margin-right:5px;
+	top:2px;
+	padding:0
+	}
+	.panel-body select,#data-table_length select{
+	border:1px solid #ccd0d4;
+	background:#fff;
+	font-size:12px;
+	height:30px!important;
+	padding-left:12px;
+	line-height:1.42857143;
+	color:#555;
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;
+	border-radius:3px;
+	outline:none;
+	vertical-align:middle
+	}
+	
+	.panel-body button,.popover-content button{
+	height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+    font-size: 12px;
+    border:none;
+    outline:none;
+	vertical-align:middle;
+	color:#fff;
+	background:#fc9153;
+	font-weight:300;
+	border-radius:3px;
+	}
+	.panel-body button.btn.btn-primary{line-height:auto}
+	.form-control{height:auto}
+	
+	.panel-heading-btn{
+	display:none;
+	}
+	::-webkit-scrollbar  
+{  
+    width: 12px;  
+    height: 12px;  
+    background-color: #F5F5F5;  
+} 
+::-webkit-scrollbar-thumb  
+{  
+    border-radius: 10px;  
+    /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);   */
+    background-color: #E5E5E5;  
+}	
+#queryDiv .panel-body{padding-top:0}
+.panel{margin-bottom:0}
+.dataTables_wrapper .dataTables_paginate .paginate_button,.ellipsis{
+position: relative;
+    float: left;
+    padding: 6px 12px;
+    margin-left: -1px;
+    line-height:18px;
+    height:30px;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius:0;
+}
+.ellipsis{line-height:22px;}
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active{
+	color: #999!important;
+    cursor: not-allowed;
+    background: #fff!important;
+    border-color: #ddd!important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.first{border-radius:3px 0 0 3px}
+.dataTables_wrapper .dataTables_paginate .paginate_button.last{border-radius:0 3px 3px 0}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover{background: #eee!important;border: 1px solid #ddd;color:#333!important;}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{
+background:#4d7496!important;color:#fff!important;cursor:default;
+}
+</style>
+
+<script type="text/javascript">
+  var dataTable1 = null;
+  function loading_data_an(){}
+var tableTableOpt = {
+		
+		"searching" : false,
+         //  "sDom": "<'row-fluid inboxHeader'<'span6'<'dt_actions'>l><'span6'f>r>t<'row-fluid inboxFooter'<'span6'i><'span6'p>>", //待补充
+          "sDom": "<>lfrtip<>",
+           "bAutoWidth": true,//宽度是否自动，感觉不好使的时候关掉试试
+　　　　	//　　"bLengthChange": true, 
+　　　　　//　　　"bFilter": true, //是否启用客户端过滤器
+        "fnInitComplete":function (oSettings, iStart, iEnd, iMax, iTotal, sPre){
+        	if(typeof fnInitComplete ==  'function'){
+        		fnInitComplete(oSettings, iStart, iEnd, iMax, iTotal, sPre);
+        	}
+        	
+        },
+       "bInfo":true,
+       // bSortClasses:true,
+        "fnInfoCallback": function( oS, iStart, iEnd, iMax, iTotal, sPre ) {
+        	setActions();
+            return sPre;
+        },
+        "sPaginationType": "full_numbers",
+        "oLanguage": {
+            "sProcessing": "<img src='<@sp.cms_static/>imgs/bms_loading_1.gif' width='40'>",
+            "sLengthMenu": "每页显示 _MENU_ 条记录",
+            "sZeroRecords": "未找到相关数据！",
+            "sEmptyTable": "暂无记录！",
+            "sInfo": "当前显示 _START_ 到 _END_ 条，共 _TOTAL_ 条记录",
+            "sInfoFiltered": "共为 _MAX_ 条记录",
+            "sSearch": "搜索",
+            "oPaginate": {
+                "sFirst": "<<",
+                "sPrevious": "<",
+                "sNext": ">",
+                "sLast": ">>"
+            }
+        }, //多语言配置
+
+            "bProcessing": true, //开启读取服务器数据时显示正在加载中……特别是大数据量的时候，开启此功能比较好
+            "bServerSide": true, //开启服务器模式，使用服务器端处理配置datatable。注意：sAjaxSource参数也必须被给予为了给datatable源代码来获取所需的数据对于每个画。 这个翻译有点别扭。开启此模式后，你对datatables的每个操作 每页显示多少条记录、下一页、上一页、排序（表头）、搜索，这些都会传给服务器相应的值。 
+            "sAjaxSource" : curUrl+"?act=data&" + new Date().getTime(),
+            "aoColumns" : oacls,
+            "aoColumnDefs":oaclDfs,
+         　  "aaSorting": ocalSorts, //默认排序
+           
+              }
+  
+  
+	
+$(function() {
+	if(typeof (retrieveData) ==  'function'){
+    	tableTableOpt.fnServerData = retrieveData;
+    }
+	if(typeof bPaginat != 'undefined'){
+		tableTableOpt.bPaginate = bPaginat;
+	}
+	
+	
+	//设置那个菜单高亮
+	//setCurActive();
+	dataTable1 =  $("#data-table").dataTable(tableTableOpt);
+
+	setTableHeight();
+	
+	$(window).resize(function(){setTableHeight();setIframeHeight() })
+	
+});
+  
+  function setTableHeight(){
+		var h1 = $(window).height();
+		var h2 = $("#data-table").offset().top;
+		var h3= h1-h2-49;
+		$("#data-table").css("height",h3);
+  }
+  
+    
+    function setActions(){
+    	//选中行事件
+    	 $('#data-table>tbody>tr').click(function() {
+    		 $(this).addClass('bigFont').siblings().removeClass('bigFont').end();
+      	});
+    }
+   /*  "fnServerData": //与后台交互获取数据的处理函数 
+        function ( sSource, aoData, fnCallback ){
+        	if(typeof retrieveData ==  'function'){
+        		retrieveData ( sSource, aoData, fnCallback );
+        	}
+        	
+        }, */
+        
+      //新增时更改窗口大小（配合js不使用edit_inc.html的页面）！
+        function setIframeHeight(){
+        	var h1 = $(window).height();
+			var h4 = $("#edit_form").offset().top;
+			//alert(h4);
+			var h5 = h1-h4;
+			$("#edit_form").css("height",h5);
+		}
+     
+        
+        
+        
+    
+   	</script>

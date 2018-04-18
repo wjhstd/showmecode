@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="code-io" />
+        <module name="code-network" />
+        <module name="code-nio" />
+        <module name="code-redis" />
+        <module name="code-rpc" />
+        <module name="code-spring" />
+        <module name="code-xml" />
+        <module name="codemessage" />
+        <module name="coderpc" />
+        <module name="spring-websocket" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="code-io" target="1.7" />
+      <module name="code-network" target="1.7" />
+      <module name="code-nio" target="1.7" />
+      <module name="code-redis" target="1.7" />
+      <module name="code-rpc" target="1.7" />
+      <module name="code-spring" target="1.7" />
+      <module name="code-xml" target="1.7" />
+      <module name="codeapache" target="1.7" />
+      <module name="codemessage" target="1.7" />
+      <module name="showmecode" target="1.7" />
+      <module name="spring-websocket" target="1.7" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

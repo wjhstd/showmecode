@@ -1,0 +1,155 @@
+		<!-- begin #sidebar -->
+		<script type="text/javascript">
+		var cur_big_li = null;  
+		var cur_url_li = null; 
+		function openMenu(bigLiId){
+			//暂时无执行
+		//	setOpenMenuActive(liId);
+			var act = "active";
+			$("#"+cur_big_li).removeClass(act);
+			$("#"+bigLiId).addClass(act);
+			cur_big_li = bigLiId;
+		}
+		
+		function openToUrl(urlLi,url){
+			
+			if(url.indexOf(".htm")>=0){
+			//	window.location.href = url;
+				//如果是系统菜单
+				setCurBack(urlLi);
+				if(url.indexOf("/system/")>=0){
+					var array = getRolesByUrl(url+"");
+					var lastUrl = url+"?_rs="+array[0]+array[1]+array[2]+array[3]+array[4]+(Math.random()*1000000).toFixed(0) +"&a_b="+(Math.random()*1000000).toFixed(0);
+					//window.open(lastUrl,"sysWin1");
+					$("#iframeId",parent.document.body).attr("src",url); 
+				}else{
+					$("#iframeId",parent.document.body).attr("src",url); 
+				}
+				
+			}
+		}
+		
+		
+		 function setCurBack(liId){
+			var act = "active";
+			 $("#"+cur_big_li).removeClass(act);
+			 $("#"+cur_url_li).removeClass(act);
+			 $("#"+liId).addClass(act);
+			 $("#"+liId).parent().parent().addClass(act);
+			cur_url_li = liId;
+			 
+		} 
+		/*  function setOpenMenuActive(liId){
+				var act = "active";
+				 $("#"+cur_big_li).removeClass(act);
+				 $("#"+liId).addClass(act);
+			}  */
+		
+		
+
+		</script>
+		
+		
+		<!-- 加载用户菜单权限 -->
+		<#if login.systemAdmin >
+			<script type="text/javascript">
+				var menuRoles = {};
+				function getRolesByUrl(url){
+					return [1,1,1,1,1,1,1,1,1,1,1,1];
+				}
+			</script>
+		<#else>
+		<script type="text/javascript">
+				var menuRoles = {};
+				<#list menus as menu>
+					<#list menu.subMenus as subMenu>
+					menuRoles["${subMenu.url}"] = [1,${subMenu.dataAdd!0},${subMenu.dataUpdate!0},${subMenu.dataDelete!0},${subMenu.dataAudit!0},${subMenu.dataExtra1!0},${subMenu.dataExtra2!0},${subMenu.dataExtra3!0},${subMenu.dataExtra4!0},${subMenu.dataExtra5!0},${subMenu.dataExtra6!0}];
+					</#list>
+				</#list>
+				
+				/***
+				* 返回menuRoles里的权限是一个数组类似 [1,0,1,1,1] 分别代表 “查，增，更新，删，审” 1表示有权限 ，
+				* @param url需要取得权限 的url
+				* eg:
+					var roles = getRolesByUrl["core/assess_question_mng.htm"] ;
+					//以下5个权限下标请记住
+					var query = roles[0];
+					var add = roles[1];
+					var update = roles[2];
+					var del = roles[3];
+					var audit = roles[4];
+				**/
+				function getRolesByUrl(url){
+					//将url格式化为系统格式的菜单
+					var url1 = url+"";
+					var ctx = "<@sp.ctx />";
+					if(url1.indexOf(ctx)!=-1){
+						var endReplace = url1.indexOf(ctx)+ctx.length;
+						var len = url1.length;
+						url1 = (url1.substring(endReplace,len));
+					}
+					
+					var roles =  menuRoles[url1];
+					//如果没查到权限 返回全是0
+					if(roles==null){
+						return  [0,0,0,0,0];
+					}
+					return roles;
+				}
+				
+		</script>
+		
+		</#if>		
+		
+		<style>
+			ul .has-sub{
+				font-size: 14px;
+			}
+		</style>
+				
+		
+		<div id="sidebar" class="sidebar">
+			<!-- begin sidebar scrollbar -->
+			<div data-scrollbar="true" data-height="100%">
+				<!-- begin sidebar user -->
+				<ul class="nav">
+					<li class="nav-profile">
+						<div class="image">
+							<a href="javascript:;"><img src="${login.avatar!''}" alt="" /> </a>
+						</div>
+						<div class="info">
+							  ${login.fullname!''}
+							<small>${login.account}</small>
+						</div>
+					</li>
+				</ul>
+				<!-- end sidebar user -->
+				<!-- begin sidebar nav -->
+				 <ul class="nav">
+					<li class="nav-header">主菜单</li>
+					
+					<#list menus as menu>
+						<li id="mli_${menu_index}" class="has-sub" >
+						<a href="javascript:openMenu('mli_${menu_index}');" >
+							<!-- <span class="badge pull-right">10</span> -->
+							<i class="fa fa-inbox"></i> 
+							<span>${menu.name}</span>
+						</a>
+						
+						<ul class="sub-menu">
+							<#list menu.subMenus as subMenu>
+						     	<li id="url_${menu_index}_${subMenu_index}" ><a  href="javascript:openToUrl('url_${menu_index}_${subMenu_index}','<@sp.ctx />${subMenu.url}');">${subMenu.name}</a></li>
+						    </#list>
+						</ul>
+					</li>
+					</#list>
+
+					
+				</ul> 
+				<!-- end sidebar nav -->
+
+			</div>
+			<!-- end sidebar scrollbar -->
+		</div>
+		<div class="sidebar-bg"></div>
+		<!-- end #sidebar -->

@@ -1,0 +1,362 @@
+
+   
+   
+                       <#assign hasDateType=0  />
+                         <!-- begin panel -->
+					<div id="editDiv" class="panel-body panel-form " style="display: none" >
+                            <form class="form-horizontal form-bordered" data-parsley-validate="true" id="edit_form" name="demo-form">
+                	<#list inputListMap?keys as key>
+						<#assign input=inputListMap[key]  />
+							<#if input.inputType() == 'hidden'>
+								<input type="hidden" class="hidden" name="${key}"   />
+							<#else>
+         					<div class="form-group">
+									<label class="control-label col-md-2 col-sm-2" for="${key}"  >${input.label()} <#if input.notEmpty()><span class="must" style="color:red">*</span></#if> :</label>
+         						<div class="col-md-4 col-sm-3" id="_div_${key}">
+         						<#if input.constValue()?has_content>
+		         					<input class="form-control" readonly="readonly" name="${key}"   value="${input.constValue()}" type="text"     />	
+								<#elseif input.inputType() == 'text'>
+										<input class="form-control" type="text"  name="${key}"   	 />
+								<#elseif input.inputType() == 'radio'>
+									<#list  input.inputValues() as vs>
+										<label id="radio_lab_${key}_${vs_index}">
+												 <input type="radio" value="${vs?split(':')[0]}"   name="${key}"     />${vs?split(':')[1]}
+										</label>
+									</#list>
+									
+         					<#elseif input.inputType() == 'checkbox'>
+										<div class="checkbox">
+											<#list  input.inputValues() as vs>
+												<label id="chbox_lab_${key}_${vs_index}">
+													<#if vs?split(':')[0] == input.defaultValue()> <input type="checkbox" value="${vs?split(':')[0]}"   name="${key}"   checked="checked" />${vs?split(':')[1]} </#if>
+													<#if vs?split(':')[0] != input.defaultValue()> <input type="checkbox" value="${vs?split(':')[0]}"   name="${key}"    />${vs?split(':')[1]} </#if>
+												</label>
+											</#list>
+										</div>
+							<#elseif input.inputType() == 'integer'>
+								<input type="number"  name="${key}" class="form-control" data-parsley-type="number"  /> 
+							<#elseif input.inputType() == 'date'>
+								 	 <#assign hasDateType=1  />
+								 <input  type="text"   name="${key}"   class="form_date form-control"  style="width:100px"  />
+							<#elseif input.inputType() == 'datetime'>
+								 <#assign hasDateType=1  />
+								<input  type="text" name="${key}"    class="form_datetime form-control"   style="width:140px"  />
+						
+							<#elseif input.inputType() == 'textarea'>
+													<textarea  rows="5" cols="50"   name="${key}"   ></textarea>
+							<#elseif input.inputType() == 'select'>
+													<select  name="${key}"   >
+														<#list  input.inputValues() as vs>
+																<option value="${vs?split(':')[0]}" >${vs?split(':')[1]}</option>
+														</#list>
+													</select>
+							<#else>
+												<input type="${input.inputType()}" class="input" name="${key}"     />
+			            	</#if>
+         						</div>	
+         						</div>
+         				</#if>			
+         							</#list>
+                            	
+								<div class="form-group">
+									<label class="control-label col-md-2 col-sm-4"></label>
+									<div class="col-md-4 col-sm-3">
+									<button type="button" class="btn btn-primary" onclick="mySubmit()">提交</button>
+									</div>
+								</div> 
+									
+									
+							
+							
+                            </form>
+                        </div>
+                          <!-- end panel -->
+                         
+                          
+                       <script type="text/javascript">
+                       
+              
+            		
+                       
+                 var curEditId_ =  null;
+				var curOpt_ = 0;
+				var optBtns_ = "addBtn,copyBtn,editBtn,removeBtn".split(",");
+				function backToList(){
+			   		$('#queryDiv').show();
+			   		$('#editDiv').hide();
+			   		curOpt_ = 0;
+			   		setOptBtn(curOpt_);
+			   		setIframeHeight();
+			   	}
+			   	function showEditPannel(){
+			   		$('#queryDiv').hide();
+			   		$('#editDiv').show();
+			   	}
+				
+			   	function setOptBtn(opt){
+			   		if(opt == 0){
+			   			$('#addBtn').removeClass('disabled');
+				   		$('#copyBtn').removeClass('disabled');
+				   		$('#editBtn').removeClass('disabled');
+				   		$('#removeBtn').removeClass('disabled');
+				   		$('#backBtn').addClass('disabled');
+			   		}else{
+			   			for(var i=0;i<=optBtns_.length;i++){
+			   				if(opt==(i+1)){
+			   					continue;
+			   				}
+			   				$('#'+optBtns_[i]).addClass('disabled');
+			   				
+			   			}
+				   		$('#backBtn').removeClass('disabled');
+			   		}
+			   	
+			   	}
+
+				function showAdd(){
+					$("input[name=id]:checked").attr("checked",false);
+					
+					$("#edit_form :input").each(function(index){
+			   			var name = $(this).attr("name");
+			   			if($(this).attr("type") != "radio"){
+			   				$(this).val("");
+			   			}
+			   		});
+					
+					showEditPannel();
+					curOpt_ = 1;
+					setOptBtn(curOpt_);
+					setIframeHeight(); 
+			   	}
+			   	function showCopy(){
+			   		curOpt_ = 2;
+			   		editLoading(curOpt_);
+			   		setIframeHeight();
+			   	}
+				function showEdit(){
+					curOpt_ = 3;
+					editLoading(curOpt_);
+					setIframeHeight();
+			   	}
+				
+				function editLoading(opt){
+					var checkedLen = ($("input[name=id]:checked").length);
+			   		if(checkedLen === 1 ){
+			   			showEditPannel();
+				   		curOpt_ = opt;
+			   		}else {
+			   			alert("请选择一个做为编辑对象");
+			   			return;
+			   		}
+			   		var idCheck = $(":checkbox[name=id]:checked").val();
+			   		curEditId_ = idCheck;
+			   	 	$.post(curUrl+"?act=loadEdit&id="+idCheck,function(result){
+					   	 	if(typeof result == 'string'){
+			    				 result = eval("("+result+")");
+			    			}
+				   	 	$("#edit_form :input").each(function(index){
+				   			var name = $(this).attr("name");
+				   			$(this).val([result[name]]);
+				   		});
+			   		});
+			   	 	setOptBtn(curOpt_);
+				}
+			  
+		    	function removeMore(){
+		    		var checkedLen = ($("input[name=id]:checked").length);
+		    		if(checkedLen == 0){
+		    			return ;
+		    		}
+		    		if(! confirm("确认删除吗")){
+		    			return false;
+		    		}
+		    		var pars = ($("input[name=id][type='checkbox']:checked").serialize());
+		    		 $.getJSON(curUrl+"?act=remove",pars,function(result){
+		    			 if(result.paramObj >= 1){
+		    				 dataTable1.fnDraw(true);
+		    			 }else{
+		    				 alert("删除失败");
+		    			 }
+		    		}); 
+		    	}
+		    	
+		    	function mySubmit(){
+		    		switch (curOpt_) {
+					case 1:
+						addNew();
+						break;
+					case 2:
+						copyByOld();
+						break;
+					case 3:
+						update();
+						break;	
+					default:
+						break;
+					}
+		    	}
+		    	
+		    	function addNew(){
+		    		$.post(curUrl+"?act=add",$("#edit_form").serialize(),function ck (result){
+		    			
+		    			
+		    		
+		    			
+		    			/* if(typeof result == 'string'){
+		    				 result = eval("("+result+")");
+		    			} */
+		    			
+		    			if(result.errorCode == 0){
+							alert("添加成功");
+							dataTable1.fnDraw(true);
+		    				clearForm();
+						}else if(result.errorCode ==105){
+							alert(result.errorMsg);
+							return ;
+						}else{
+							alert(result.errorMsg);
+							return ;
+						}
+		    			/*
+		    			if(result.paramObj){
+		    				if(result.errorCode == 0){
+								alert("添加成功");
+								dataTable1.fnDraw(true);
+			    				clearForm();
+							}else{
+								alert(result.errorMsg);
+							}
+		    				
+		    				
+		    				//$("#edit_form").find("hidden[name=id]").val(result.paramObj);
+		    			}else{
+		    				alert(result.errorMsg + " 错误码（" + result.errorCode + "）");
+		    			}
+		    			*/
+		    			backToList();
+		    		})
+		    		.error(function(err) { 
+		    			alert(err);
+		    		});
+		    	}
+		    	function copyByOld(){
+		    		addNew();
+		    	}
+				
+				function update(){
+					$.post(curUrl+"?act=update&id="+curEditId_,$("#edit_form").serialize(),function(result){
+		    			if(typeof result == 'string'){
+		    				 result = eval("("+result+")");
+		    			}
+		    			if(result.errorCode == 0){
+		    				alert("更新成功");
+		    				dataTable1.fnDraw(true);
+		    				backToList();
+						}else if(result.errorCode ==105){
+							alert(result.errorMsg);
+							return ;
+						}else{
+							alert(result.errorMsg);
+							return ;
+						}
+		    		});
+		    	}
+				
+				function clearForm(){ 
+					/* $("#edit_form").find(':input').each(  
+		                function(){  
+		                    switch(this.type){  
+		                        case 'passsword':  
+		                        case 'select-multiple':  
+		                        case 'select-one':  
+		                        case 'text':  
+		                        case 'textarea':  
+		                            $(this).val('');  
+		                            break;  
+		                        case 'checkbox':  
+		                        case 'radio':  
+		                            this.checked = false; 
+		                    }  
+		                }     
+		            );   */
+		            //$("#edit_form").reset();
+		            $('#edit_form')[0].reset();
+		        } 
+				
+				/** 通过ID删除 */
+				function removeById(){
+		    		
+		    		if(($("input[name=id][type='checkbox']:checked").length==0)){
+		    			return ;
+		    		}
+		    		if(! confirm("确定要删除数据 吗")){
+		    			return;
+		    		}
+		    		var pars = ($("input[name=id][type='checkbox']:checked").serialize());
+		    		
+		    		 $.post(curUrl+"?act=remove",pars,function(msg){
+		    			$('#queryDiv').show();
+				   		$('#editDiv').hide();
+				   		$('#backBtn').addClass('disabled');
+				   		//alert(msg);
+				   		dataTable1.fnDraw(false);
+		    		}); 
+		    	}
+		    		
+				
+				
+				
+				var _FORM_SOURCES = {};
+				<#list inputListMap?keys as key>
+				<#assign input=inputListMap[key]  />
+_FORM_SOURCES["${key}"]=
+{"type":"${input.inputType()}","value":"${input.defaultValue()}","maxLength":"${input.maxLength()}","minLength":"${input.minLength()}","min":"${input.min()}","max":"${input.max()}","descri":"${input.descri()?html}"};
+				</#list>
+				//编辑参数
+				setTimeout(function(){
+						for(i in _FORM_SOURCES){
+							var sour = _FORM_SOURCES[i];
+							var vl = _FORM_SOURCES[i].value;
+							var $obj = $("#edit_form").find(":input[name="+i+"]");
+							if(sour.type == 'radio' || sour.type =='checkbox'){
+								vl = [vl];
+							}
+							$obj.val(vl);
+							
+							if(sour.maxLength>0){
+								$obj.attr("maxlength",sour.maxLength)
+							}
+							if(sour.max > 0){
+								$obj.attr("max",sour.max)
+							}
+							if(sour.min > 0){
+								$obj.attr("min",sour.min)
+							}
+							if( sour.descri){
+								$obj.attr("placeholder",sour.descri);
+							}
+						}
+						
+						
+						
+				<#if hasDateType=1 >
+                 	   $('.form_date').datetimepicker({
+                 		   minView: "month", //选择日期后，不会再跳转去选择时分秒 
+                 		    language:  'zh',
+                 		    format: 'yyyy-mm-dd',
+                 		    todayBtn:  1,
+                 		    autoclose: 1,
+             			});
+                 	   $('.form_datetime').datetimepicker({
+                 		    format: 'yyyy-mm-dd hh:ii:ss',
+                 		    autoclose: 1,
+                 		    language:  'zh',
+                 		    todayBtn:  1,
+             			});
+          		</#if>
+						
+						
+				}, 500);
+		    	
+			   </script>
+                       

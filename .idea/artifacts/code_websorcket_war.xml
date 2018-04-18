@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="code-websorcket:war">
+    <output-path>$PROJECT_DIR$/code-websorcket/target</output-path>
+    <root id="archive" name="code-websorcket.war">
+      <element id="artifact" artifact-name="code-websorcket:war exploded" />
+    </root>
+  </artifact>
+</component>
