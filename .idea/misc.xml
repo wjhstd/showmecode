@@ -21,6 +21,8 @@
         <option value="$PROJECT_DIR$/spring-websocket-master/pom.xml" />
         <option value="$PROJECT_DIR$/codemessage/pom.xml" />
         <option value="$PROJECT_DIR$/code-spring/pom.xml" />
+        <option value="$PROJECT_DIR$/code-apache/pom.xml" />
+        <option value="$PROJECT_DIR$/code-java/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

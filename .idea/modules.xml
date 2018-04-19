@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/code-apache/code-apache.iml" filepath="$PROJECT_DIR$/code-apache/code-apache.iml" />
       <module fileurl="file://$PROJECT_DIR$/code-io/code-io.iml" filepath="$PROJECT_DIR$/code-io/code-io.iml" />
+      <module fileurl="file://$PROJECT_DIR$/code-java/code-java.iml" filepath="$PROJECT_DIR$/code-java/code-java.iml" />
       <module fileurl="file://$PROJECT_DIR$/code-network/code-network.iml" filepath="$PROJECT_DIR$/code-network/code-network.iml" />
       <module fileurl="file://$PROJECT_DIR$/code-nio/code-nio.iml" filepath="$PROJECT_DIR$/code-nio/code-nio.iml" />
       <module fileurl="file://$PROJECT_DIR$/code-redis/code-redis.iml" filepath="$PROJECT_DIR$/code-redis/code-redis.iml" />

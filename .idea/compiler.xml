@@ -6,7 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="code-apache" />
         <module name="code-io" />
+        <module name="code-java" />
         <module name="code-network" />
         <module name="code-nio" />
         <module name="code-redis" />
@@ -19,7 +21,9 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="code-apache" target="1.7" />
       <module name="code-io" target="1.7" />
+      <module name="code-java" target="1.7" />
       <module name="code-network" target="1.7" />
       <module name="code-nio" target="1.7" />
       <module name="code-redis" target="1.7" />
