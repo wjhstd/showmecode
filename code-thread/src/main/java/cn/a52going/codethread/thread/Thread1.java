@@ -15,14 +15,15 @@ public class Thread1 implements Runnable {
     public void run() {
         int count = 10;
         while (count > 0) {
-            synchronized (next) {
-                synchronized (self) {
+            synchronized (self) {
+
+                synchronized (next) {
                     System.out.print(name);
                     count--;
-                    self.notify();
+                    next.notify();
                 }
                 try {
-                    next.wait();
+                    self.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
