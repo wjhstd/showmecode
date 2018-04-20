@@ -10,6 +10,7 @@
       <module fileurl="file://$PROJECT_DIR$/code-redis/code-redis.iml" filepath="$PROJECT_DIR$/code-redis/code-redis.iml" />
       <module fileurl="file://$PROJECT_DIR$/code-rpc/code-rpc.iml" filepath="$PROJECT_DIR$/code-rpc/code-rpc.iml" />
       <module fileurl="file://$PROJECT_DIR$/code-spring/code-spring.iml" filepath="$PROJECT_DIR$/code-spring/code-spring.iml" />
+      <module fileurl="file://$PROJECT_DIR$/code-thread/code-thread.iml" filepath="$PROJECT_DIR$/code-thread/code-thread.iml" />
       <module fileurl="file://$PROJECT_DIR$/code-xml/code-xml.iml" filepath="$PROJECT_DIR$/code-xml/code-xml.iml" />
       <module fileurl="file://$PROJECT_DIR$/codemessage/codemessage.iml" filepath="$PROJECT_DIR$/codemessage/codemessage.iml" />
       <module fileurl="file://$PROJECT_DIR$/showmecode.iml" filepath="$PROJECT_DIR$/showmecode.iml" />

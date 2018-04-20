@@ -14,6 +14,7 @@
         <module name="code-redis" />
         <module name="code-rpc" />
         <module name="code-spring" />
+        <module name="code-thread" />
         <module name="code-xml" />
         <module name="codemessage" />
         <module name="coderpc" />
@@ -29,6 +30,7 @@
       <module name="code-redis" target="1.7" />
       <module name="code-rpc" target="1.7" />
       <module name="code-spring" target="1.7" />
+      <module name="code-thread" target="1.7" />
       <module name="code-xml" target="1.7" />
       <module name="codeapache" target="1.7" />
       <module name="codemessage" target="1.7" />
