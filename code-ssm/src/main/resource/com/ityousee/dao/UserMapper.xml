@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ityousee.dao.UserMapper">
+    <resultMap type="com.ityousee.model.User" id="userDepartmentList">
+        <id property="user_id" column="user_id" javaType="java.lang.Integer" />
+        <result property="user_name" column="user_name" javaType="java.lang.String" />
+        <result property="user_gender" column="user_gender" javaType="java.lang.String" />
+        <result property="user_email" column="user_email" javaType="java.lang.String" />
+        <result property="user_phone" column="user_phone" javaType="java.lang.String" />
+        <result property="user_address" column="user_address" javaType="java.lang.String" />
+        <result property="user_birthday" column="user_birthday" javaType="java.util.Date" />
+        <result property="department_id" column="department_id" javaType="java.lang.Integer" />
+        <association property="department"
+                     javaType="com.ityousee.model.Department">
+            <id property="department_id" column="department_id" javaType="java.lang.Integer" />
+            <result property="department_name" column="department_name" javaType="java.lang.String" />
+        </association>
+    </resultMap>
+
+
+    <select id="getAll" resultMap="userDepartmentList">
+        select u.*,d.department_name from user u left join department d on u.department_id=d.department_id;
+    </select>
+</mapper>
