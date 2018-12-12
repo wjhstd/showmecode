@@ -23,6 +23,7 @@
         <module>codemessage</module>
         <module>code-thread</module>
         <module>code-rpc</module>
+        <module>designpattern</module>
     </modules>
     <dependencies>
 

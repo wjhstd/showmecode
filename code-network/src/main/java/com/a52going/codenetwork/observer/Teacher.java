@@ -5,7 +5,7 @@ import java.util.Observable;
 
 /**
  *@ClassName: Teacher
- *@description: 类描述
+ *@description: 观察者模式
  *@author: wangjunhui@wondersgroup.com
  *@data: 2018/4/16 16:15
  **/
