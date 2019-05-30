@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="codemessage:war">
-    <output-path>$PROJECT_DIR$/codemessage/target</output-path>
-    <root id="archive" name="showmecode-1.0-SNAPSHOT.war">
-      <element id="artifact" artifact-name="codemessage:war exploded" />
-    </root>
-  </artifact>
-</component>
