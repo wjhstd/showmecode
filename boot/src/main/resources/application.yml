@@ -6,3 +6,15 @@ server:
     buffer-size: 1024
     direct-buffers: true
 
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource      #配置MySQL的驱动程序类
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.108.35:3306/example?useUnicode=true&characterEncoding=utf8
+    username: root
+    password: kx_#$%
+#    filters: stat,wall,log4j     #druid监控配置
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  mapper-locations: classpath:mapping/*.xml
