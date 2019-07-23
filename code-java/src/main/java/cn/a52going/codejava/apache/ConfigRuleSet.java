@@ -1,7 +1,7 @@
 package cn.a52going.codejava.apache;
 
-import org.apache.commons.digester.Digester;
-import org.apache.commons.digester.RuleSetBase;
+import org.apache.commons.digester3.Digester;
+import org.apache.commons.digester3.RuleSetBase;
 
 /**
  *@ClassName: ConfigRuleSet
@@ -11,7 +11,7 @@ import org.apache.commons.digester.RuleSetBase;
  **/
 
 
-public class ConfigRuleSet extends RuleSetBase{
+public class ConfigRuleSet extends RuleSetBase {
     @Override
     public void addRuleInstances(Digester digester) {
         digester.setValidating( false );
