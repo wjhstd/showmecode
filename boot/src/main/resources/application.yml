@@ -14,6 +14,11 @@ spring:
     username: root
     password: kx_#$%
 #    filters: stat,wall,log4j     #druid监控配置
+  redis:
+    host: 47.103.13.228
+    password:
+    port: 6379
+    timeout: 5000ms
 
 mybatis:
   configuration:
