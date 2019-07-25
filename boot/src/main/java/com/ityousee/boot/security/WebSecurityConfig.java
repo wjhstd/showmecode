@@ -40,6 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
 //                .antMatcher("/api/**")
                 .authorizeRequests().antMatchers("/resources/**").permitAll()
+                .and().authorizeRequests().antMatchers("/testPush").permitAll()
                 .and().authorizeRequests().anyRequest().authenticated()
                 .and()
                 //权限不足时的处理

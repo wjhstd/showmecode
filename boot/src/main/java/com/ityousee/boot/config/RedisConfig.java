@@ -6,11 +6,18 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.Topic;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+
+import javax.annotation.Resource;
 
 /**
  * redis配置类
@@ -18,6 +25,13 @@ import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 @Configuration
 @EnableCaching
 public class RedisConfig extends CachingConfigurerSupport {
+    @Resource
+    private MessageListener messageListener;
+    /** redis 连接工厂 */
+    @Resource
+    private RedisConnectionFactory redisConnectionFactory;
+    //任务池
+    private ThreadPoolTaskScheduler taskScheduler;
     @Bean
     @Override
     public KeyGenerator keyGenerator() {
@@ -69,4 +83,34 @@ public class RedisConfig extends CachingConfigurerSupport {
         sessionRepository.setDefaultMaxInactiveInterval(36000);
         return sessionRepository;
     }
+
+
+
+    /**
+     * 创建任务池，运行线程等待处理redis的消息
+     */
+    @Bean
+    public ThreadPoolTaskScheduler initTaskScheduler() {
+        if (null != taskScheduler) {
+            return taskScheduler;
+        }
+        taskScheduler = new ThreadPoolTaskScheduler();
+        taskScheduler.setPoolSize(20);
+        return taskScheduler;
+    }
+
+    @Bean
+    public RedisMessageListenerContainer initRedisContainer() {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        //Redis连接工厂
+        container.setConnectionFactory(redisConnectionFactory);
+        //设置运行任务的线程池
+        container.setTaskExecutor(initTaskScheduler());
+        //定义监听渠道，名称为topic1
+        Topic topic = new ChannelTopic("topic1");
+        //使用监听器监听Redis的消息
+        container.addMessageListener(messageListener, topic);
+        return container;
+    }
+
 }
