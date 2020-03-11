@@ -410,7 +410,10 @@
         <load-on-startup>5</load-on-startup>
     </servlet>
 -->
-
+    <servlet>
+        <servlet-name>hello</servlet-name>
+        <servlet-class>org.apache.catalina.servlets.HelloServlet</servlet-class>
+    </servlet>
 
   <!-- ================ Built In Servlet Mappings ========================= -->
 
@@ -421,6 +424,10 @@
   <!-- web.xml deployment descriptor) to enable these services              -->
 
     <!-- The mapping for the default servlet -->
+    <servlet-mapping>
+        <servlet-name>hello</servlet-name>
+        <url-pattern>/hello</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>default</servlet-name>
         <url-pattern>/</url-pattern>
@@ -614,7 +621,19 @@
         <url-pattern>*.shtml</url-pattern>
     </filter-mapping>
 -->
+    <filter>
+        <!--过滤器的名字，这个我们可以自定义名字，但是必须跟下面的mapping中的name一致-->
+        <filter-name>responseFilter</filter-name>
+        <!--filter-class是你所创建的Filter的具体位置，格式如下!!!这里千万不能写错，不然系统找不到你的过滤器-->
+        <filter-class>org.apache.customFilter.ResponseFilter</filter-class>
+    </filter>
 
+    <filter-mapping>
+        <!--mapping中的filter和上面我们定义的filter-name必须一致-->
+        <filter-name>responseFilter</filter-name>
+        <!--url-pattern是这个过滤器的作用范围，'/*'表示对所有的类生效-->
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
   <!-- ==================== Default Session Configuration ================= -->
   <!-- You can set the default session timeout (in minutes) for all newly   -->
