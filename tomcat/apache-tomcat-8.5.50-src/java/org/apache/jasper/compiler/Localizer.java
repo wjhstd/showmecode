@@ -16,11 +16,11 @@
  */
 package org.apache.jasper.compiler;
 
+import org.apache.jasper.runtime.ExceptionUtils;
+
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
-import org.apache.jasper.runtime.ExceptionUtils;
 
 /**
  * Class responsible for converting error codes to corresponding localized
@@ -58,6 +58,11 @@ public class Localizer {
                 errMsg = bundle.getString(errCode);
             }
         } catch (MissingResourceException e) {
+        }
+        try {
+            errMsg = new String(errMsg.getBytes("ISO-8859-1"), "UTF-8");
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return errMsg;
     }
