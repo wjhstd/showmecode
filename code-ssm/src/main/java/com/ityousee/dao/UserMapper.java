@@ -2,8 +2,6 @@ package com.ityousee.dao;
 
 import com.ityousee.model.User;
 
-import java.util.List;
-
 /**
  *@ClassName: UserMapper
  *@description: 类描述
@@ -14,4 +12,6 @@ import java.util.List;
 
 public interface UserMapper {
     User getAll();
+    int insert(User user);
+    int update(User user);
 }

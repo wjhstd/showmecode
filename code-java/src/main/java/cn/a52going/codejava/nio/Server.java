@@ -12,7 +12,7 @@ import java.util.Set;
 public class Server {
     public static void main (String[] args) throws Exception{
         ServerSocketChannel ssc = ServerSocketChannel.open();
-        ssc.socket().bind(new InetSocketAddress("127.0.0.1", 8000));
+        ssc.socket().bind(new InetSocketAddress("192.168.55.133", 8000));
         ssc.configureBlocking(false);
     
         Selector selector = Selector.open();

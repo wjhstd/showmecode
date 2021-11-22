@@ -23,4 +23,12 @@
     <select id="getAll" resultMap="userDepartmentList">
         select u.*,d.department_name from user u left join department d on u.department_id=d.department_id;
     </select>
+
+    <insert id="insert" parameterType="com.ityousee.model.User">
+        insert into user(user_name, user_gender,user_email,user_phone) values ( #{user_name,jdbcType=VARCHAR},
+		#{user_gender,jdbcType=VARCHAR},#{user_email,jdbcType=VARCHAR},#{user_phone,jdbcType=VARCHAR})
+    </insert>
+    <insert id="update" parameterType="com.ityousee.model.User">
+        update user set user_name = #{user_name,jdbcType=VARCHAR} where user_id=2
+    </insert>
 </mapper>

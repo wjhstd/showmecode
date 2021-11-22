@@ -39,7 +39,18 @@ public class MyResponseWrapper extends HttpServletResponseWrapper {
         }
         return pwrite;
     }
-
+    
+    @Override
+    public HttpServletResponse getResponse (){
+    
+        try {
+            response.getWriter();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+    
     public byte[] getBytes () {
         if (null != pwrite) {
             pwrite.close();
