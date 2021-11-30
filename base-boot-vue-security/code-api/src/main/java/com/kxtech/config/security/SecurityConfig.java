@@ -8,10 +8,13 @@ import com.kxtech.config.security.url.UrlAccessDecisionManager;
 import com.kxtech.config.security.url.UrlAccessDeniedHandler;
 import com.kxtech.config.security.url.UrlFilterInvocationSecurityMetadataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,9 +22,9 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-//@Configuration
-//@EnableWebSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
+@Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -107,7 +110,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 标识访问 `/home` 这个接口，需要具备`ADMIN`角色
 //        registry.antMatchers("/home").hasRole("ADMIN");
         // 标识只能在 服务器本地ip[127.0.0.1或localhost] 访问 `/home` 这个接口，其他ip地址无法访问
-        registry.antMatchers("/home").hasIpAddress("127.0.0.1");
+//        registry.antMatchers("/home").hasIpAddress("127.0.0.1");
 
         // 允许匿名的url - 可理解为放行接口 - 除配置文件忽略url以外，其它所有请求都需经过认证和授权
         for (String url : myProperties.getAuth().getIgnoreUrls()) {

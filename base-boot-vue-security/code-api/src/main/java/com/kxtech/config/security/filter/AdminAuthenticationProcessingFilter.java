@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
  * @date : 2019/10/12 15:32
  */
 @Slf4j
-//@Component
+@Component
 public class AdminAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
 
     /**

@@ -1,8 +1,8 @@
 # 配置端口
 server:
-  port: 8060
+  port: 8080
   servlet:
-    #    context-path: /api
+#    context-path: /api
     application-display-name: management-plateform
 
 spring:

@@ -15,6 +15,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -33,7 +34,7 @@ import java.io.UnsupportedEncodingException;
  * @date : 2019/10/12 16:17
  */
 @Slf4j
-//@Component
+@Component
 public class MyAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
