@@ -18,7 +18,7 @@ public class TestCronExpection {
     public void test(){
         logger.info("定时任务执行"+ LocalDateTime.now());
         try {
-            Thread.sleep(1000*60*10);
+            Thread.sleep(50 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

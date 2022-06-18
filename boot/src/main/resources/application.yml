@@ -10,7 +10,7 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource      #配置MySQL的驱动程序类
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://192.168.108.35:3306/example?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://192.168.113.135:3306/falcon_prod?useUnicode=true&characterEncoding=utf8
     username: root
     password: kx_#$%
 #    filters: stat,wall,log4j     #druid监控配置

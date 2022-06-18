@@ -1,18 +1,22 @@
 package com.ityousee.cronjob;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 @Component
 public class TestHeartCron {
+    
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-
-
-//    @Scheduled(fixedRate = 2000)
-//    public void rolestatus() {
-//        new Thread(()->{
-//            RestClient.commandAgent("192.168.113.130", "8063", "/em/command/device/role?storageRole=2&serviceRole=2&andesPort=7000", "ROLE_STATUS", RequestMethod.GET, ContentType.APPLICATION_JSON);
-//        }).start();
-//    }
+    @Scheduled(fixedRate = 5000)
+    public void rolestatus() {
+    
+        logger.info(">>>>>>>>>>>>>>>>> " + Thread.currentThread().getName() + "> 心跳" + "> " + new Date());
+    }
 //    @Scheduled(fixedRate = 2000)
 //    public void recoverspeed() {
 //

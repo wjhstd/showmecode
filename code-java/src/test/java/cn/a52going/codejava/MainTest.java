@@ -1,5 +1,18 @@
 package cn.a52going.codejava;
 
+import com.google.gson.Gson;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
 import java.io.FileInputStream;
@@ -8,15 +21,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class MainTest {
+    public static final Map<String, Boolean> CUSTOMCONFMAP_DISPLAY = new HashMap<String, Boolean>();
+    private static final RequestConfig config = RequestConfig.custom().setConnectionRequestTimeout(1000).setConnectTimeout(2000)
+            .setSocketTimeout(30000)
+            .build();
     public static void main (String[] args) {
     
         String fromFileName = "G:\\wjh\\from.mp4";
@@ -82,6 +104,95 @@ public class MainTest {
         listSource = tmpList;
         System.out.println(listSource);
         System.out.println( (long)((double)25 / 100 * 2 * 60 * 1000));
+    }
+    
+    @Test
+    public void test3() throws InterruptedException {
+        Gson gson = new Gson();
+        String token = HttpRequestUtil.getToken("192.168.55.133", "8062");
+        Map<String, String> map = new HashMap<>();
+        map.put("clusterId", "1");
+        map.put("poolId", "1");
+        map.put("volumeName", "vcbbb");
+        map.put("capacityTotal", "10737418240");
+        map.put("blockThin", "1");
+        map.put("description", "1");
+        map.put("redMode", "no");
+        map.put("unitSelect", "3");
+        map.put("volumeNum", "1");
+//        HttpRequestUtil.sendJsonPostRequest("192.168.55.133", "8062", "/mng/blockVolume/", token, map);
+        CountDownLatch countDownLatch = new CountDownLatch(10);
+        for (int i = 0; i < 10; i++){
+            new Thread(()->{
+                request("http://192.168.55.133:8062/mng/blockVolume", gson.toJson(map), token);
+                countDownLatch.countDown();
+//                HttpRequestUtil.sendJsonPostRequest("192.168.55.133", "8062", "/mng/blockVolume/", token, map);
+            }).start();
+        }
+        countDownLatch.await();
+        
+    }
+    
+    
+    private static String request(String uri, String body, String token) {
+    
+        
+        String reponseBody = null;
+        CloseableHttpClient httpClient = null;
+        int statusCode = HttpStatus.SC_BAD_REQUEST;
+        try {
+            HttpPost httpPost = new HttpPost();
+            httpPost.setURI(URI.create(uri));
+            httpPost.setConfig(config);
+    
+            HttpEntity requestEntity = new StringEntity(body, ContentType.APPLICATION_JSON);
+            httpPost.setEntity(requestEntity);
+            // 配置请求的HEADER部分
+            httpPost.setHeader("X_AUTH_TOKEN", token);
+            httpPost.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
+            // HttpClientBuilder 默认超时自动重发3次，此处配置 不重发
+            httpClient = HttpClientBuilder.create().setRetryHandler(new DefaultHttpRequestRetryHandler(0, false)).build();
+            
+            HttpResponse response = httpClient.execute(httpPost);
+            System.out.println(">>> result code: " + response.getStatusLine().getStatusCode());
+//            statusCode = response.getStatusLine().getStatusCode();
+            // if(statusCode <200 || statusCode >= 400){
+            // return gson.toJson(new CommonResponse(response.getStatusLine().getReasonPhrase()));
+            // }
+            // 获取响应消息实体
+            HttpEntity resEntity = response.getEntity();
+            
+            // 判断响应实体是否为空
+            if (resEntity != null) {
+                reponseBody = EntityUtils.toString(resEntity, ContentType.APPLICATION_JSON.getCharset());
+            }
+            System.out.println(">>> result body: " + reponseBody);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭或释放资源
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+            }
+        }
+        return reponseBody;
+    }
+    
+    @Test
+    public void test10(){
+        List<byte[]> objs = new ArrayList<>();
+    
+        for (;;) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(30);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        
+            objs.add(new byte[10240]);
+        }
     }
     
 }

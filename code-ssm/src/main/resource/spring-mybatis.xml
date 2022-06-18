@@ -115,7 +115,7 @@
 
 <!--    定时任务-->
     <task:annotation-driven scheduler="scheduler" mode="proxy"/>
-    <task:scheduler id="scheduler" pool-size="16"/>
+    <task:scheduler id="scheduler" pool-size="1"/>
 
     <!-- 对数据源进行事务管理 -->
     <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

@@ -16,6 +16,21 @@
  */
 package org.apache.tomcat.util.net;
 
+import org.apache.juli.logging.Log;
+import org.apache.tomcat.util.ExceptionUtils;
+import org.apache.tomcat.util.IntrospectionUtils;
+import org.apache.tomcat.util.collections.SynchronizedStack;
+import org.apache.tomcat.util.modeler.Registry;
+import org.apache.tomcat.util.net.AbstractEndpoint.Acceptor.AcceptorState;
+import org.apache.tomcat.util.res.StringManager;
+import org.apache.tomcat.util.threads.LimitLatch;
+import org.apache.tomcat.util.threads.ResizableExecutor;
+import org.apache.tomcat.util.threads.TaskQueue;
+import org.apache.tomcat.util.threads.TaskThreadFactory;
+import org.apache.tomcat.util.threads.ThreadPoolExecutor;
+
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
@@ -32,22 +47,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
-
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-
-import org.apache.juli.logging.Log;
-import org.apache.tomcat.util.ExceptionUtils;
-import org.apache.tomcat.util.IntrospectionUtils;
-import org.apache.tomcat.util.collections.SynchronizedStack;
-import org.apache.tomcat.util.modeler.Registry;
-import org.apache.tomcat.util.net.AbstractEndpoint.Acceptor.AcceptorState;
-import org.apache.tomcat.util.res.StringManager;
-import org.apache.tomcat.util.threads.LimitLatch;
-import org.apache.tomcat.util.threads.ResizableExecutor;
-import org.apache.tomcat.util.threads.TaskQueue;
-import org.apache.tomcat.util.threads.TaskThreadFactory;
-import org.apache.tomcat.util.threads.ThreadPoolExecutor;
 
 /**
  * @param <S> The type for the sockets managed by this endpoint.
@@ -422,7 +421,7 @@ public abstract class AbstractEndpoint<S> {
     /**
      * Acceptor thread count.
      */
-    protected int acceptorThreadCount = 1;
+    protected int acceptorThreadCount = 3;
 
     public void setAcceptorThreadCount(int acceptorThreadCount) {
         this.acceptorThreadCount = acceptorThreadCount;

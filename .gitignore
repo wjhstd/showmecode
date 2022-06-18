@@ -33,7 +33,6 @@ $RECYCLE.BIN/
 ### Eclipse template
 
 .metadata
-bin/
 tmp/
 *.tmp
 *.bak
@@ -205,7 +204,6 @@ buildNumber.properties
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear

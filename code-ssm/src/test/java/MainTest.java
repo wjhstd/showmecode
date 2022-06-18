@@ -28,7 +28,9 @@ public class MainTest {
 //
 //        executorService.shutdown();
     
-    
+        Long aa = 42352552352L;
+        float bb = aa;
+        System.out.println(bb);
     
     }
 }
