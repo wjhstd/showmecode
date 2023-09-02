@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.apache.ibatis.mapper.NasUserMapper">
+<!--  <cache type="com.kxtech.nas.core.cache.RedisCache"  />-->
+  <resultMap id="BaseResultMap" type="org.apache.ibatis.entity.NasUser">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="real_name" jdbcType="VARCHAR" property="realName" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="update_time" jdbcType="BIGINT" property="updateTime" />
+    <result column="bizopen" jdbcType="BIT" property="bizopen" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="capacity" jdbcType="BIGINT" property="capacity" />
+    <result column="region_code" jdbcType="INTEGER" property="regionCode" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="activate_time" jdbcType="BIGINT" property="activateTime" />
+    <result column="stop_volume_time" jdbcType="BIGINT" property="stopVolumeTime" />
+    <result column="role" jdbcType="VARCHAR" property="role" />
+    <result column="operate_status" jdbcType="VARCHAR" property="operateStatus" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_name, real_name, email, mobile, create_time, update_time, bizopen, status, password, capacity, region_code, remark,activate_time,stop_volume_time,role,operate_status
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from nas_user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from nas_user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="org.apache.ibatis.entity.NasUser">
+    insert into nas_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="realName != null">
+        real_name,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="mobile != null">
+        mobile,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="bizopen != null">
+        bizopen,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="capacity != null">
+        capacity,
+      </if>
+      <if test="regionCode != null">
+        region_code,
+      </if>
+      <if test="role != null">
+        role,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null">
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=BIGINT},
+      </if>
+      <if test="bizopen != null">
+        #{bizopen,jdbcType=BIT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="capacity != null">
+        #{capacity,jdbcType=BIGINT},
+      </if>
+      <if test="regionCode != null">
+        #{regionCode,jdbcType=INTEGER},
+      </if>
+      <if test="role != null">
+        #{role,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+</mapper>
